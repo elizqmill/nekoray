@@ -8,6 +8,10 @@
         <translation>Основные настройки</translation>
     </message>
     <message>
+        <source>Dark</source>
+        <translation>Тёмная</translation>
+    </message>
+    <message>
         <source>Common</source>
         <translation>Общие</translation>
     </message>
@@ -297,6 +301,38 @@
     <message>
         <source>Share</source>
         <translation>Поделиться</translation>
+    </message>
+    <message>
+        <source>Request Headers</source>
+        <translation>Заголовки запроса</translation>
+    </message>
+    <message>
+        <source>JSON HTTP headers sent with subscription requests</source>
+        <translation>HTTP-заголовки в формате JSON, отправляемые при обновлении подписки</translation>
+    </message>
+    <message>
+        <source>Not set</source>
+        <translation>Не задано</translation>
+    </message>
+    <message>
+        <source>User Agent</source>
+        <translation>User Agent</translation>
+    </message>
+    <message>
+        <source>Default: %1</source>
+        <translation>По умолчанию: %1</translation>
+    </message>
+    <message>
+        <source>Invalid JSON</source>
+        <translation>Некорректный JSON</translation>
+    </message>
+    <message>
+        <source>JSON object of HTTP headers sent with subscription requests, e.g.</source>
+        <translation>JSON-объект HTTP-заголовков для запросов подписки, например:</translation>
+    </message>
+    <message>
+        <source>Invalid request headers JSON, ignoring: %1</source>
+        <translation>Некорректный JSON заголовков запроса, пропускаю: %1</translation>
     </message>
 </context>
 <context>

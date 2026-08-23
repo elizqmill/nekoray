@@ -131,13 +131,40 @@
       <item row="0" column="1">
        <widget class="MyLineEdit" name="url"/>
       </item>
-      <item row="1" column="1">
-       <widget class="QCheckBox" name="skip_auto_update">
-        <property name="text">
-         <string>Skip automatic update</string>
-        </property>
-       </widget>
-      </item>
+       <item row="1" column="1">
+        <widget class="QCheckBox" name="skip_auto_update">
+         <property name="text">
+          <string>Skip automatic update</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_5">
+         <property name="text">
+          <string>Request Headers</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QPushButton" name="request_headers">
+         <property name="toolTip">
+          <string>JSON HTTP headers sent with subscription requests</string>
+         </property>
+         <property name="text">
+          <string notr="true"/>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_6">
+         <property name="text">
+          <string>User Agent</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLineEdit" name="user_agent"/>
+       </item>
      </layout>
     </widget>
    </item>
@@ -189,6 +216,8 @@
   <tabstop>archive</tabstop>
   <tabstop>url</tabstop>
   <tabstop>skip_auto_update</tabstop>
+  <tabstop>request_headers</tabstop>
+  <tabstop>user_agent</tabstop>
   <tabstop>copy_links</tabstop>
   <tabstop>copy_links_nkr</tabstop>
  </tabstops>

@@ -3,6 +3,8 @@
 #include <QByteArray>
 #include <QNetworkProxy>
 #include <QEventLoop>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QMetaEnum>
 #include <QTimer>
 
@@ -10,7 +12,52 @@
 
 namespace NekoGui_network {
 
-    NekoHTTPResponse NetworkRequestHelper::HttpGet(const QUrl &url) {
+    // Parse a JSON object of HTTP request headers, e.g.
+    // {"X-HWID": "b4d9f2a1c8e37605", "X-Device-OS": "Android"}
+    static QList<QPair<QByteArray, QByteArray>> ParseJsonHeaders(const QString &json, QString *error) {
+        QList<QPair<QByteArray, QByteArray>> headers;
+        if (json.trimmed().isEmpty()) return headers;
+
+        QJsonParseError parseError;
+        auto doc = QJsonDocument::fromJson(json.trimmed().toUtf8(), &parseError);
+        if (parseError.error != QJsonParseError::NoError || !doc.isObject()) {
+            *error = parseError.errorString();
+            return headers;
+        }
+
+        const auto object = doc.object();
+        for (auto it = object.constBegin(); it != object.constEnd(); ++it) {
+            auto key = it.key().trimmed();
+            if (key.isEmpty()) continue;
+
+            QString value;
+            switch (it.value().type()) {
+                case QJsonValue::String:
+                    value = it.value().toString();
+                    break;
+                case QJsonValue::Double:
+                    value = QString::number(it.value().toDouble());
+                    break;
+                case QJsonValue::Bool:
+                    value = it.value().toBool() ? QStringLiteral("true") : QStringLiteral("false");
+                    break;
+                case QJsonValue::Object:
+                    value = QString::fromUtf8(QJsonDocument(it.value().toObject()).toJson(QJsonDocument::Compact));
+                    break;
+                case QJsonValue::Array:
+                    value = QString::fromUtf8(QJsonDocument(it.value().toArray()).toJson(QJsonDocument::Compact));
+                    break;
+                default:
+                    continue;
+            }
+            if (value.trimmed().isEmpty()) continue;
+
+            headers.append({key.toUtf8(), value.toUtf8()});
+        }
+        return headers;
+    }
+
+    NekoHTTPResponse NetworkRequestHelper::HttpGet(const QUrl &url, const QString &customHeadersJson, const QString &customUserAgent) {
         QNetworkRequest request;
         QNetworkAccessManager accessManager;
         request.setUrl(url);
@@ -38,7 +85,19 @@ namespace NekoGui_network {
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 9, 0))
         request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::NoLessSafeRedirectPolicy);
 #endif
-        request.setHeader(QNetworkRequest::KnownHeaders::UserAgentHeader, NekoGui::dataStore->GetUserAgent());
+        // User-Agent: group override has priority over global setting
+        auto userAgent = customUserAgent.trimmed().isEmpty() ? NekoGui::dataStore->GetUserAgent() : customUserAgent.trimmed();
+        request.setHeader(QNetworkRequest::KnownHeaders::UserAgentHeader, userAgent);
+        // Custom request headers (JSON)
+        QString headersError;
+        const auto customHeaders = ParseJsonHeaders(customHeadersJson, &headersError);
+        if (!headersError.isEmpty()) {
+            // A malformed headers blob must not kill the whole request - skip custom headers and fetch anyway.
+            MW_show_log(QObject::tr("Invalid request headers JSON, ignoring: %1").arg(headersError));
+        }
+        for (const auto &[key, value]: customHeaders) {
+            request.setRawHeader(key, value);
+        }
         if (NekoGui::dataStore->sub_insecure) {
             QSslConfiguration c;
             c.setPeerVerifyMode(QSslSocket::PeerVerifyMode::VerifyNone);

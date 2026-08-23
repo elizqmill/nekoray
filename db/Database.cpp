@@ -311,6 +311,8 @@ namespace NekoGui {
         _add(new configItem("name", &name, itemType::string));
         _add(new configItem("order", &order, itemType::integerList));
         _add(new configItem("url", &url, itemType::string));
+        _add(new configItem("req_headers", &request_headers, itemType::string));
+        _add(new configItem("user_agent", &user_agent, itemType::string));
         _add(new configItem("info", &info, itemType::string));
         _add(new configItem("lastup", &sub_last_update, itemType::integer64));
         _add(new configItem("manually_column_width", &manually_column_width, itemType::boolean));

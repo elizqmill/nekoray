@@ -517,7 +517,8 @@ namespace NekoGui_sub {
             auto groupName = group == nullptr ? content : group->name;
             MW_show_log(">>>>>>>> " + QObject::tr("Requesting subscription: %1").arg(groupName));
 
-            auto resp = NetworkRequestHelper::HttpGet(content);
+            auto resp = NetworkRequestHelper::HttpGet(content, group == nullptr ? "" : group->request_headers,
+                                                      group == nullptr ? "" : group->user_agent);
             if (!resp.error.isEmpty()) {
                 MW_show_log("<<<<<<<< " + QObject::tr("Requesting subscription %1 error: %2").arg(groupName, resp.error + "\n" + resp.data));
                 return;

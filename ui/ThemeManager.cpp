@@ -1,3 +1,5 @@
+#include <QColor>
+#include <QPalette>
 #include <QStyle>
 #include <QApplication>
 #include <QStyleFactory>
@@ -20,7 +22,44 @@ void ThemeManager::ApplyTheme(const QString &theme) {
         bool ok;
         auto themeId = theme.toInt(&ok);
 
-        if (ok) {
+        if (ok && themeId == 4) {
+            // Dark: Fusion style with a proper dark palette
+            qApp->setStyle(QStyleFactory::create("Fusion"));
+
+            QPalette darkPalette;
+            darkPalette.setColor(QPalette::Window, QColor(0x2b, 0x2b, 0x2b));
+            darkPalette.setColor(QPalette::WindowText, Qt::white);
+            darkPalette.setColor(QPalette::Disabled, QPalette::WindowText, QColor(0x7f, 0x7f, 0x7f));
+            darkPalette.setColor(QPalette::Base, QColor(0x24, 0x24, 0x24));
+            darkPalette.setColor(QPalette::AlternateBase, QColor(0x2b, 0x2b, 0x2b));
+            darkPalette.setColor(QPalette::ToolTipBase, QColor(0x24, 0x24, 0x24));
+            darkPalette.setColor(QPalette::ToolTipText, Qt::white);
+            darkPalette.setColor(QPalette::Text, Qt::white);
+            darkPalette.setColor(QPalette::Disabled, QPalette::Text, QColor(0x7f, 0x7f, 0x7f));
+            darkPalette.setColor(QPalette::Dark, QColor(0x23, 0x23, 0x23));
+            darkPalette.setColor(QPalette::Shadow, QColor(0x14, 0x14, 0x14));
+            darkPalette.setColor(QPalette::Button, QColor(0x36, 0x36, 0x36));
+            darkPalette.setColor(QPalette::ButtonText, Qt::white);
+            darkPalette.setColor(QPalette::Disabled, QPalette::ButtonText, QColor(0x7f, 0x7f, 0x7f));
+            darkPalette.setColor(QPalette::BrightText, Qt::red);
+            darkPalette.setColor(QPalette::Link, QColor(0x2a, 0x82, 0xda));
+            darkPalette.setColor(QPalette::LinkVisited, QColor(0x5a, 0x4a, 0xda));
+            darkPalette.setColor(QPalette::Highlight, QColor(0x2a, 0x82, 0xda));
+            darkPalette.setColor(QPalette::Disabled, QPalette::Highlight, QColor(0x50, 0x50, 0x50));
+            darkPalette.setColor(QPalette::HighlightedText, Qt::white);
+            darkPalette.setColor(QPalette::Disabled, QPalette::HighlightedText, QColor(0x7f, 0x7f, 0x7f));
+            darkPalette.setColor(QPalette::PlaceholderText, QColor(0x8a, 0x8a, 0x8a));
+
+            qApp->setPalette(darkPalette);
+            qApp->setStyleSheet(
+                "QToolTip { color: #ffffff; background-color: #242424; border: 1px solid #4a4a4a; padding: 2px; }\n"
+                "QTableView QTableCornerButton::Section { background-color: #363636; }\n"
+                "QHeaderView::section { background-color: #363636; color: #ffffff; padding: 2px; border: 1px solid #2b2b2b; }\n"
+                "QMenu::separator { height: 1px; background: #4a4a4a; margin-left: 6px; margin-right: 6px; }\n"
+                "QLineEdit[readOnly=\"true\"], QTextEdit[readOnly=\"true\"] { color: #a0a0a0; }\n");
+
+            current_theme = theme;
+        } else if (ok) {
             // System & Built-in
             QString qss;
 

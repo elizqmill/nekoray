@@ -26,11 +26,17 @@ private:
         int front_proxy;
     } CACHE;
 
+    QString request_headers_cache;
+
     void refresh_front_proxy();
+
+    void refresh_request_headers();
 
 private slots:
 
     void accept() override;
 
     void on_front_proxy_clicked();
+
+    void on_request_headers_clicked();
 };

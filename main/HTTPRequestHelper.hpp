@@ -22,7 +22,7 @@ namespace NekoGui_network {
         ;
 
     public:
-        static NekoHTTPResponse HttpGet(const QUrl &url);
+        static NekoHTTPResponse HttpGet(const QUrl &url, const QString &customHeadersJson = {}, const QString &customUserAgent = {});
 
         static QString GetHeader(const QList<QPair<QByteArray, QByteArray>> &header, const QString &name);
     };

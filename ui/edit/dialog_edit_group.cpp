@@ -5,6 +5,9 @@
 #include "ui/mainwindow_interface.h"
 
 #include <QClipboard>
+#include <QInputDialog>
+#include <QJsonDocument>
+#include <QJsonParseError>
 
 #define ADJUST_SIZE runOnUiThread([=] { adjustSize(); adjustPosition(mainwindow); }, this);
 
@@ -21,6 +24,10 @@ DialogEditGroup::DialogEditGroup(const std::shared_ptr<NekoGui::Group> &ent, QWi
     ui->archive->setChecked(ent->archive);
     ui->skip_auto_update->setChecked(ent->skip_auto_update);
     ui->url->setText(ent->url);
+    request_headers_cache = ent->request_headers;
+    refresh_request_headers();
+    ui->user_agent->setText(ent->user_agent);
+    ui->user_agent->setPlaceholderText(tr("Default: %1").arg(NekoGui::dataStore->GetUserAgent(true)));
     ui->type->setCurrentIndex(ent->url.isEmpty() ? 0 : 1);
     ui->type->currentIndexChanged(ui->type->currentIndex());
     ui->manually_column_width->setChecked(ent->manually_column_width);
@@ -79,6 +86,8 @@ void DialogEditGroup::accept() {
     }
     ent->name = ui->name->text();
     ent->url = ui->url->text();
+    ent->request_headers = request_headers_cache.trimmed();
+    ent->user_agent = ui->user_agent->text().trimmed();
     ent->archive = ui->archive->isChecked();
     ent->skip_auto_update = ui->skip_auto_update->isChecked();
     ent->manually_column_width = ui->manually_column_width->isChecked();
@@ -89,6 +98,39 @@ void DialogEditGroup::accept() {
 void DialogEditGroup::refresh_front_proxy() {
     auto fEnt = NekoGui::profileManager->GetProfile(CACHE.front_proxy);
     ui->front_proxy->setText(fEnt == nullptr ? tr("None") : fEnt->bean->DisplayTypeAndName());
+}
+
+void DialogEditGroup::refresh_request_headers() {
+    if (request_headers_cache.trimmed().isEmpty()) {
+        ui->request_headers->setText(tr("Not set"));
+        return;
+    }
+    auto oneLine = request_headers_cache.simplified();
+    if (oneLine.length() > 40) oneLine = oneLine.left(40) + "...";
+    ui->request_headers->setText(oneLine);
+}
+
+void DialogEditGroup::on_request_headers_clicked() {
+    bool ok;
+    auto txt = QInputDialog::getMultiLineText(this, tr("Request Headers"),
+                                              tr("JSON object of HTTP headers sent with subscription requests, e.g.") + "\n" +
+                                                  R"({"X-HWID": "b4d9f2a1c8e37605", "X-Device-OS": "Android"})",
+                                              request_headers_cache, &ok);
+    if (!ok) return;
+
+    auto t = txt.trimmed();
+    if (t.isEmpty()) {
+        request_headers_cache = "";
+    } else {
+        QJsonParseError parseError;
+        auto doc = QJsonDocument::fromJson(t.toUtf8(), &parseError);
+        if (parseError.error != QJsonParseError::NoError || !doc.isObject()) {
+            MessageBoxWarning(tr("Warning"), tr("Invalid JSON") + ": " + parseError.errorString());
+            return;
+        }
+        request_headers_cache = QString::fromUtf8(QJsonDocument(doc.object()).toJson(QJsonDocument::Indented));
+    }
+    refresh_request_headers();
 }
 
 void DialogEditGroup::on_front_proxy_clicked() {
