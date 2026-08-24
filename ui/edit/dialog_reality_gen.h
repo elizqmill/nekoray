@@ -23,4 +23,7 @@ private slots:
     void on_sidgen_clicked();
 
     void on_copy_clicked();
+
+private:
+    Ui::DialogRealityGen *ui;
 };

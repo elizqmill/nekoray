@@ -45,6 +45,7 @@
 #include <QInputDialog>
 #include <QThread>
 #include <QTimer>
+#include <QDateTime>
 #include <QMessageBox>
 #include <QDir>
 #include <QFileDialog>
@@ -104,7 +105,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         // Settings backup / restore
         ui->menu_preferences->addSeparator();
 
-        static const auto copyDirRecursive = [](const QString &src, const QString &dst, bool *ok) -> void {
+        static const std::function<void(const QString &, const QString &, bool *)> copyDirRecursive =
+            [](const QString &src, const QString &dst, bool *ok) -> void {
             QDir(src).mkpath(dst);
             for (const auto &entry: QDir(src).entryInfoList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot)) {
                 if (entry.isDir()) {
@@ -136,7 +138,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
                                                          QApplication::applicationDirPath());
             if (dir.isEmpty()) return;
             bool ok = true;
-            static const auto clearDir = [](const QString &d) {
+            const std::function<void(const QString &)> clearDir = [](const QString &d) {
                 QDir(d).removeRecursively();
             };
             for (const auto &sub: {"groups", "profiles", "routes"}) {
