@@ -27,10 +27,12 @@ EOF
 chmod +x nekobox.AppDir/AppRun
 
 # build
+# note: releases/latest was removed upstream, use the continuous tag;
+# --appimage-extract-and-run avoids the libfuse dependency on CI runners
 
-curl -fLSO https://github.com/AppImage/AppImageKit/releases/latest/download/appimagetool-x86_64.AppImage
+curl -fLSO https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
 chmod +x appimagetool-x86_64.AppImage
-./appimagetool-x86_64.AppImage nekobox.AppDir
+./appimagetool-x86_64.AppImage --appimage-extract-and-run nekobox.AppDir
 
 # clean
 
