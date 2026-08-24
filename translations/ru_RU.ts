@@ -696,7 +696,7 @@
         <translation>Удалить маршруты: %1</translation>
     </message>
     <message>
-        `<source>This is especially important and it is recommended to use the default value of &quot;localhost&quot;.
+        <source>This is especially important and it is recommended to use the default value of &quot;localhost&quot;.
 If the default value does not work, try changing it to &quot;223.5.5.5&quot;.
 For more information, see the document &quot;Configuration/DNS&quot;.</source>
         <translation>��� ����� �����, ������������� �������� �������� �� ��������� �localhost�. ���� �� ��������, ���������� �223.5.5.5�. ��������� ��. ������������ �Configuration/DNS�.</translation>
