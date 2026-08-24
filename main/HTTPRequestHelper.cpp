@@ -3,6 +3,7 @@
 #include <QByteArray>
 #include <QNetworkProxy>
 #include <QEventLoop>
+#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QMetaEnum>
