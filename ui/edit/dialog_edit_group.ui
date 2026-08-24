@@ -143,15 +143,33 @@
          <property name="text">
           <string>Request Headers</string>
          </property>
+         <property name="alignment">
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+         </property>
         </widget>
        </item>
        <item row="2" column="1">
-        <widget class="QPushButton" name="request_headers">
+        <widget class="QPlainTextEdit" name="request_headers">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>90</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>140</height>
+          </size>
+         </property>
          <property name="toolTip">
           <string>JSON HTTP headers sent with subscription requests</string>
          </property>
-         <property name="text">
-          <string notr="true"/>
+         <property name="placeholderText">
+          <string notr="true">{
+  "X-HWID": "b4d9f2a1c8e37605",
+  "X-Device-OS": "Android"
+}</string>
          </property>
         </widget>
        </item>
