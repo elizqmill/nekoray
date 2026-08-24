@@ -8,14 +8,16 @@ import (
 	"grpc_server"
 	"grpc_server/gen"
 
+	"github.com/matsuridayo/libneko/neko_common"
+	"github.com/matsuridayo/libneko/neko_log"
+	"github.com/matsuridayo/libneko/speedtest"
 	box "github.com/sagernet/sing-box"
 	"github.com/sagernet/sing-box/boxapi"
-	"github.com/sagernet/sing-box/option"
+	boxmain "github.com/sagernet/sing-box/cmd/sing-box"
 
 	"log"
 
-	"github.com/matsuridayo/libneko/neko_common"
-	"github.com/matsuridayo/libneko/speedtest"
+	"github.com/sagernet/sing-box/option"
 )
 
 type server struct {
@@ -30,7 +32,6 @@ func (s *server) Start(ctx context.Context, in *gen.LoadConfigReq) (out *gen.Err
 		if err != nil {
 			out.Error = err.Error()
 			instance = nil
-			nekoStats = nil
 		}
 	}()
 
@@ -43,14 +44,18 @@ func (s *server) Start(ctx context.Context, in *gen.LoadConfigReq) (out *gen.Err
 		return
 	}
 
-	instance, instance_cancel, err = createBoxInstance([]byte(in.CoreConfig))
+	instance, instance_cancel, err = boxmain.Create([]byte(in.CoreConfig))
 
-	if instance != nil && in.StatsOutbounds != nil {
-		// V2ray Service (traffic counter for the boxapi helpers)
-		nekoStats = boxapi.NewSbV2rayServer(option.V2RayStatsServiceOptions{
-			Enabled:   true,
-			Outbounds: in.StatsOutbounds,
-		})
+	if instance != nil {
+		// Logger
+		instance.SetLogWritter(neko_log.LogWriter)
+		// V2ray Service
+		if in.StatsOutbounds != nil {
+			instance.Router().SetV2RayServer(boxapi.NewSbV2rayServer(option.V2RayStatsServiceOptions{
+				Enabled:   true,
+				Outbounds: in.StatsOutbounds,
+			}))
+		}
 	}
 
 	return
@@ -74,7 +79,6 @@ func (s *server) Stop(ctx context.Context, in *gen.EmptyReq) (out *gen.ErrorResp
 	instance.Close()
 
 	instance = nil
-	nekoStats = nil
 
 	return
 }
@@ -94,7 +98,7 @@ func (s *server) Test(ctx context.Context, in *gen.TestReq) (out *gen.TestResp, 
 		var cancel context.CancelFunc
 		if in.Config != nil {
 			// Test instance
-			i, cancel, err = createBoxInstance([]byte(in.Config.CoreConfig))
+			i, cancel, err = boxmain.Create([]byte(in.Config.CoreConfig))
 			if i != nil {
 				defer i.Close()
 				defer cancel()
@@ -110,11 +114,11 @@ func (s *server) Test(ctx context.Context, in *gen.TestReq) (out *gen.TestResp, 
 			}
 		}
 		// Latency
-		out.Ms, err = speedtest.UrlTest(boxapi.CreateProxyHttpClient(i, statsTrackerFor(i)), in.Url, in.Timeout, speedtest.UrlTestStandard_RTT)
+		out.Ms, err = speedtest.UrlTest(boxapi.CreateProxyHttpClient(i), in.Url, in.Timeout, speedtest.UrlTestStandard_RTT)
 	} else if in.Mode == gen.TestMode_TcpPing {
 		out.Ms, err = speedtest.TcpPing(in.Address, in.Timeout)
 	} else if in.Mode == gen.TestMode_FullTest {
-		i, cancel, err := createBoxInstance([]byte(in.Config.CoreConfig))
+		i, cancel, err := boxmain.Create([]byte(in.Config.CoreConfig))
 		if i != nil {
 			defer i.Close()
 			defer cancel()
@@ -131,8 +135,10 @@ func (s *server) Test(ctx context.Context, in *gen.TestReq) (out *gen.TestResp, 
 func (s *server) QueryStats(ctx context.Context, in *gen.QueryStatsReq) (out *gen.QueryStatsResp, _ error) {
 	out = &gen.QueryStatsResp{}
 
-	if nekoStats != nil {
-		out.Traffic = nekoStats.QueryStats(fmt.Sprintf("outbound>>>%s>>>traffic>>>%s", in.Tag, in.Direct))
+	if instance != nil {
+		if ss, ok := instance.Router().V2RayServer().(*boxapi.SbV2rayServer); ok {
+			out.Traffic = ss.QueryStats(fmt.Sprintf("outbound>>>%s>>>traffic>>>%s", in.Tag, in.Direct))
+		}
 	}
 
 	return

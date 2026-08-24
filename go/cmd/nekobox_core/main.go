@@ -3,10 +3,12 @@ package main
 import (
 	"fmt"
 	"os"
+	_ "unsafe"
 
 	"grpc_server"
 
 	"github.com/matsuridayo/libneko/neko_common"
+	boxmain "github.com/sagernet/sing-box/cmd/sing-box"
 	"github.com/sagernet/sing-box/constant"
 )
 
@@ -21,5 +23,6 @@ func main() {
 		return
 	}
 
-	fmt.Println("Usage: nekobox_core nekobox [-port=19810] [-token=...] [-debug]")
+	// sing-box
+	boxmain.Main()
 }
