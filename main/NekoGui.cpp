@@ -274,6 +274,7 @@ namespace NekoGui {
         _add(new configItem("anti_dpi_ports", &anti_dpi_ports, itemType::string));
         _add(new configItem("anti_dpi_fallback_delay", &anti_dpi_fallback_delay, itemType::string));
         _add(new configItem("anti_dpi_record_fragment", &anti_dpi_record_fragment, itemType::boolean));
+        _add(new configItem("remote_rule_sets", &remote_rule_sets, itemType::stringList));
         _add(new configItem("sp_format", &system_proxy_format, itemType::string));
         _add(new configItem("sub_clear", &sub_clear, itemType::boolean));
         _add(new configItem("sub_insecure", &sub_insecure, itemType::boolean));

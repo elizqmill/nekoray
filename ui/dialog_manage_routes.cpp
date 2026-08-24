@@ -8,6 +8,7 @@
 #include "fmt/Preset.hpp"
 
 #include <QFile>
+#include <QInputDialog>
 #include <QMessageBox>
 #include <QListWidget>
 #include <QLineEdit>
@@ -109,6 +110,48 @@ DialogManageRoutes::DialogManageRoutes(QWidget *parent) : QDialog(parent), ui(ne
         updateGeoDb("https://github.com/v2fly/domain-list-community/releases/latest/download/dlc.dat", "geosite.db");
     });
 
+    // Remote rule sets
+    remote_rs_backup = NekoGui::dataStore->remote_rule_sets;
+    auto refreshRemoteRs = [=] {
+        ui->remote_rs_list->clear();
+        for (const auto &entry: NekoGui::dataStore->remote_rule_sets) {
+            auto parts = entry.split("|");
+            if (parts.size() != 2) continue;
+            ui->remote_rs_list->addItem(parts[0] + "  ←  " + parts[1]);
+        }
+    };
+    refreshRemoteRs();
+    connect(ui->remote_rs_add, &QPushButton::clicked, this, [=] {
+        bool ok;
+        auto target = QInputDialog::getItem(this, tr("Remote Rule Set"), tr("Route matched traffic to:"),
+                                            {"proxy", "bypass", "reject"}, 0, false, &ok);
+        if (!ok) return;
+        auto url = QInputDialog::getText(this, tr("Remote Rule Set"), tr(".srs URL:"), QLineEdit::Normal,
+                                         "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/category-ads-all.srs", &ok);
+        if (!ok || url.trimmed().isEmpty()) return;
+        NekoGui::dataStore->remote_rule_sets += target + "|" + url.trimmed();
+        refreshRemoteRs();
+    });
+    connect(ui->remote_rs_del, &QPushButton::clicked, this, [=] {
+        auto row = ui->remote_rs_list->currentRow();
+        if (row < 0 || row >= NekoGui::dataStore->remote_rule_sets.size()) return;
+        NekoGui::dataStore->remote_rule_sets.removeAt(row);
+        refreshRemoteRs();
+    });
+    connect(ui->remote_rs_preset_ru, &QPushButton::clicked, this, [=] {
+        auto ensure = [=](const QString &target, const QString &url) {
+            auto entry = target + "|" + url;
+            if (!NekoGui::dataStore->remote_rule_sets.contains(entry)) {
+                NekoGui::dataStore->remote_rule_sets += entry;
+            }
+        };
+        // ads & trackers -> reject
+        ensure("reject", "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/category-ads-all.srs");
+        // russian domains -> bypass (direct)
+        ensure("bypass", "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/category-ru.srs");
+        refreshRemoteRs();
+    });
+
     QString geoipFn = NekoGui::FindCoreAsset("geoip.dat");
     QString geositeFn = NekoGui::FindCoreAsset("geosite.dat");
     //
@@ -152,6 +195,7 @@ void DialogManageRoutes::accept() {
     NekoGui::dataStore->anti_dpi_ports = ui->anti_dpi_ports->text();
     NekoGui::dataStore->anti_dpi_fallback_delay = ui->anti_dpi_fallback_delay->text();
     NekoGui::dataStore->anti_dpi_record_fragment = ui->anti_dpi_record->isChecked();
+    if (NekoGui::dataStore->remote_rule_sets != remote_rs_backup) routeChanged = true;
     if (NekoGui::dataStore->active_routing != active_routing) routeChanged = true;
     SaveDisplayRouting(NekoGui::dataStore->routing.get());
     NekoGui::dataStore->active_routing = active_routing;

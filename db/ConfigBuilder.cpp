@@ -682,6 +682,32 @@ namespace NekoGui {
         add_rule_route(status->ipListRemote, true, tagProxy);
         add_rule_route(status->ipListDirect, true, "bypass");
 
+        // remote rule sets (global)
+        for (int i = 0; i < dataStore->remote_rule_sets.size(); i++) {
+            // entry format: outbound|https://.../file.srs
+            auto parts = dataStore->remote_rule_sets[i].split("|");
+            if (parts.size() != 2) continue;
+            auto target = parts[0].trimmed();
+            auto url = parts[1].trimmed();
+            if (target.isEmpty() || url.isEmpty()) continue;
+
+            auto tag = "rs-" + Int2String(i);
+            ruleSets += QJsonObject{
+                {"type", "remote"},
+                {"tag", tag},
+                {"format", "binary"},
+                {"url", url},
+                {"download_detour", "direct"},
+            };
+            QJsonObject rsRule{{"rule_set", QJsonArray{tag}}};
+            if (target == "reject") {
+                rsRule["action"] = "reject";
+            } else {
+                rsRule["outbound"] = target == "bypass" ? "bypass" : tagProxy;
+            }
+            status->routingRules += rsRule;
+        }
+
         // built-in rules
         if (!status->forTest && dataStore->anti_dpi_tls_fragment) {
             // Anti-DPI: fragment TLS ClientHello (sing-box 1.12 route-options action)

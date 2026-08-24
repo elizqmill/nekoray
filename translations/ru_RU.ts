@@ -221,7 +221,7 @@
     </message>
     <message>
         <source>Mixed (SOCKS+HTTP) Listen Port</source>
-        <translation type="unfinished"></translation>
+        <translation>Порт для входящих (SOCKS+HTTP)</translation>
     </message>
 </context>
 <context>
@@ -696,15 +696,90 @@
         <translation>Удалить маршруты: %1</translation>
     </message>
     <message>
-        <source>This is especially important and it is recommended to use the default value of &quot;localhost&quot;.
+        `<source>This is especially important and it is recommended to use the default value of &quot;localhost&quot;.
 If the default value does not work, try changing it to &quot;223.5.5.5&quot;.
 For more information, see the document &quot;Configuration/DNS&quot;.</source>
-        <translation type="unfinished"></translation>
+        <translation>��� ����� �����, ������������� �������� �������� �� ��������� �localhost�. ���� �� ��������, ���������� �223.5.5.5�. ��������� ��. ������������ �Configuration/DNS�.</translation>
     </message>
     <message>
-        <source>Final DNS Out</source>
-        <translation type="unfinished"></translation>
+        <source>Final DNS Out</source><translation>Исходящий DNS по умолчанию</translation>
+    </message>    <message>
+        <source>Anti-DPI (TLS Fragment)</source>
+        <translation>Анти-ДПИ (TLS Fragment)</translation>
     </message>
+    <message>
+        <source>Enable TLS fragmentation for TCP ports below</source>
+        <translation>Включить фрагментацию TLS для TCP-портов ниже</translation>
+    </message>
+    <message>
+        <source>TCP Ports</source>
+        <translation>TCP-порты</translation>
+    </message>
+    <message>
+        <source>Fallback delay</source>
+        <translation>Задержка fallback</translation>
+    </message>
+    <message>
+        <source>Use TLS record fragmentation instead of ClientHello fragmentation</source>
+        <translation>Использовать фрагментацию TLS-записей вместо фрагментации ClientHello</translation>
+    </message>
+    <message>
+        <source>Apply maximum DPI bypass preset</source>
+        <translation>Применить максимальный пресет обхода DPI</translation>
+    </message>
+    <message>
+        <source>Geo Databases</source>
+        <translation>Гео-базы данных</translation>
+    </message>
+    <message>
+        <source>Update geoip.db</source>
+        <translation>Обновить geoip.db</translation>
+    </message>
+    <message>
+        <source>Update geosite.db</source>
+        <translation>Обновить geosite.db</translation>
+    </message>
+    <message>
+        <source>Remote Rule Sets (.srs URLs)</source>
+        <translation>Удалённые наборы правил (.srs URL)</translation>
+    </message>
+    <message>
+        <source>Add</source>
+        <translation>Добавить</translation>
+    </message>
+    <message>
+        <source>Remove</source>
+        <translation>Удалить</translation>
+    </message>
+    <message>
+        <source>RU Preset</source>
+        <translation>RU-пресет</translation>
+    </message>
+    <message>
+        <source>Route matched traffic to:</source>
+        <translation>Направлять совпавший трафик в:</translation>
+    </message>
+    <message>
+        <source>.srs URL:</source>
+        <translation>.srs URL:</translation>
+    </message>
+    <message>
+        <source>Downloading %1 ...</source>
+        <translation>Скачивание %1 ...</translation>
+    </message>
+    <message>
+        <source>Failed to download %1: %2</source>
+        <translation>Не удалось скачать %1: %2</translation>
+    </message>
+    <message>
+        <source>Cannot write to %1</source>
+        <translation>Не удалось записать %1</translation>
+    </message>
+    <message>
+        <source>%1 updated (%2 KB)</source>
+        <translation>%1 обновлён (%2 КБ)</translation>
+    </message>
+
 </context>
 <context>
     <name>DialogVPNSettings</name>
@@ -775,7 +850,15 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
     <message>
         <source>Cancel</source>
         <translation>Отмена</translation>
+    </message>    <message>
+        <source>Select running processes</source>
+        <translation>Выбрать запущенные процессы</translation>
     </message>
+    <message>
+        <source>Could not list processes</source>
+        <translation>Не удалось получить список процессов</translation>
+    </message>
+
 </context>
 <context>
     <name>EditChain</name>
@@ -874,12 +957,10 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation></translation>
     </message>
     <message>
-        <source>Disable logs</source>
-        <translation type="unfinished"></translation>
+        <source>Disable logs</source><translation>Отключить логи</translation>
     </message>
     <message>
-        <source>Turn on this option if your connection is lost after a while</source>
-        <translation type="unfinished"></translation>
+        <source>Turn on this option if your connection is lost after a while</source><translation>Включите, если соединение пропадает через некоторое время</translation>
     </message>
 </context>
 <context>
@@ -949,8 +1030,7 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation>Режим UDP Relay</translation>
     </message>
     <message>
-        <source>Force use external core</source>
-        <translation type="unfinished"></translation>
+        <source>Force use external core</source><translation>Принудительно использовать внешний core</translation>
     </message>
 </context>
 <context>
@@ -1531,13 +1611,41 @@ End: %2</source>
         <translation>Не удалось остановить, пожалуйста, перезапустите приложение.</translation>
     </message>
     <message>
-        <source>Stop Testing</source>
-        <translation type="unfinished"></translation>
+        <source>Stop Testing</source><translation>Остановить тестирование</translation>
     </message>
     <message>
-        <source>URL Test</source>
-        <translation type="unfinished"></translation>
+        <source>URL Test</source><translation>URL-тест</translation>
+    </message>    <message>
+        <source>Reality link generator</source>
+        <translation>Генератор Reality-ссылок</translation>
     </message>
+    <message>
+        <source>Backup settings</source>
+        <translation>Резервная копия настроек</translation>
+    </message>
+    <message>
+        <source>Restore settings</source>
+        <translation>Восстановить настройки</translation>
+    </message>
+    <message>
+        <source>Select backup folder</source>
+        <translation>Выберите папку с резервной копией</translation>
+    </message>
+    <message>
+        <source>Settings backed up to:
+%1</source>
+        <translation>Настройки сохранены в:
+%1</translation>
+    </message>
+    <message>
+        <source>Restored. Please restart the program.</source>
+        <translation>Восстановлено. Перезапустите программу.</translation>
+    </message>
+    <message>
+        <source>Some files failed to restore</source>
+        <translation>Некоторые файлы не удалось восстановить</translation>
+    </message>
+
 </context>
 <context>
     <name>ProxyItem</name>
@@ -1686,8 +1794,7 @@ Release note:
         <translation>По умолчанию</translation>
     </message>
     <message>
-        <source>The last speed test did not exit completely, please wait. If it persists, please restart the program.</source>
-        <translation type="unfinished"></translation>
+        <source>The last speed test did not exit completely, please wait. If it persists, please restart the program.</source><translation>Предыдущий тест скорости не завершился, подождите. Если повторяется — перезапустите программу.</translation>
     </message>
 </context>
 <context>

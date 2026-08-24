@@ -133,6 +133,9 @@ namespace NekoGui {
         QString anti_dpi_fallback_delay = "";
         bool anti_dpi_record_fragment = false;
 
+        // Remote rule sets: entries like "outbound|https://url/file.srs"
+        QStringList remote_rule_sets = {};
+
         // Remember
         QStringList remember_spmode = {};
         int remember_id = -1919;

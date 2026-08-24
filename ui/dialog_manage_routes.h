@@ -42,6 +42,7 @@ private:
     //
     QString title_base;
     QString active_routing;
+    QStringList remote_rs_backup;
 
 public slots:
 
