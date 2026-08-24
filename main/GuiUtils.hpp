@@ -1,5 +1,8 @@
 #pragma once
 
+#include <QRegularExpression>
+#include <QRegularExpressionValidator>
+
 // Dialogs
 
 #define Dialog_DialogBasicSettings "DialogBasicSettings"
