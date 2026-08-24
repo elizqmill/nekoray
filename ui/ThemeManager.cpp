@@ -48,7 +48,9 @@ void ThemeManager::ApplyTheme(const QString &theme) {
             darkPalette.setColor(QPalette::Disabled, QPalette::Highlight, QColor(0x50, 0x50, 0x50));
             darkPalette.setColor(QPalette::HighlightedText, Qt::white);
             darkPalette.setColor(QPalette::Disabled, QPalette::HighlightedText, QColor(0x7f, 0x7f, 0x7f));
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
             darkPalette.setColor(QPalette::PlaceholderText, QColor(0x8a, 0x8a, 0x8a));
+#endif
 
             qApp->setPalette(darkPalette);
             qApp->setStyleSheet(
