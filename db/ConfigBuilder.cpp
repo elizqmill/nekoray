@@ -668,6 +668,25 @@ namespace NekoGui {
         add_rule_route(status->ipListDirect, true, "bypass");
 
         // built-in rules
+        if (!status->forTest && dataStore->anti_dpi_tls_fragment) {
+            // Anti-DPI: fragment TLS ClientHello (sing-box 1.12 route-options action)
+            QJsonObject antiDpiRule{{"network", "tcp"}, {"action", "route-options"}};
+            QJsonArray ports;
+            for (const auto &p: dataStore->anti_dpi_ports.split(",")) {
+                auto port = p.trimmed().toInt();
+                if (port > 0) ports += port;
+            }
+            if (!ports.isEmpty()) antiDpiRule["port"] = ports;
+            if (!dataStore->anti_dpi_fallback_delay.trimmed().isEmpty()) {
+                antiDpiRule["tls_fragment_fallback_delay"] = dataStore->anti_dpi_fallback_delay.trimmed();
+            }
+            if (dataStore->anti_dpi_record_fragment) {
+                antiDpiRule["tls_record_fragment"] = true;
+            } else {
+                antiDpiRule["tls_fragment"] = true;
+            }
+            status->routingRules += antiDpiRule;
+        }
         status->routingRules += QJsonObject{
             {"network", "udp"},
             {"port", QJsonArray{135, 137, 138, 139, 5353}},

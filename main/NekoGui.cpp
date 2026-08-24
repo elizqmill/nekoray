@@ -270,6 +270,10 @@ namespace NekoGui {
         _add(new configItem("vpn_bypass_cidr", &vpn_rule_cidr, itemType::string));
         _add(new configItem("vpn_rule_white", &vpn_rule_white, itemType::boolean));
         _add(new configItem("check_include_pre", &check_include_pre, itemType::boolean));
+        _add(new configItem("anti_dpi_tls_fragment", &anti_dpi_tls_fragment, itemType::boolean));
+        _add(new configItem("anti_dpi_ports", &anti_dpi_ports, itemType::string));
+        _add(new configItem("anti_dpi_fallback_delay", &anti_dpi_fallback_delay, itemType::string));
+        _add(new configItem("anti_dpi_record_fragment", &anti_dpi_record_fragment, itemType::boolean));
         _add(new configItem("sp_format", &system_proxy_format, itemType::string));
         _add(new configItem("sub_clear", &sub_clear, itemType::boolean));
         _add(new configItem("sub_insecure", &sub_insecure, itemType::boolean));

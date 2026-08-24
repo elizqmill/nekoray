@@ -5,7 +5,10 @@
 #include "main/NekoGui.hpp"
 #include "ui/mainwindow_interface.h"
 
+#include <QDialogButtonBox>
+#include <QListWidget>
 #include <QMessageBox>
+#include <QProcess>
 
 DialogVPNSettings::DialogVPNSettings(QWidget *parent) : QDialog(parent), ui(new Ui::DialogVPNSettings) {
     ui->setupUi(this);
@@ -24,6 +27,61 @@ DialogVPNSettings::DialogVPNSettings(QWidget *parent) : QDialog(parent), ui(new 
     //
     D_LOAD_STRING_PLAIN(vpn_rule_cidr)
     D_LOAD_STRING_PLAIN(vpn_rule_process)
+    //
+    connect(ui->select_processes, &QPushButton::clicked, this, [=] {
+        // list running processes
+        QProcess p;
+#ifdef Q_OS_WIN
+        p.start("tasklist", {"/fo", "csv", "/nh"});
+#else
+        p.start("ps", {"-eo", "comm="});
+#endif
+        p.waitForFinished(5000);
+        auto output = QString::fromLocal8Bit(p.readAllStandardOutput());
+        QStringList names;
+        for (const auto &line: output.split("\n")) {
+            auto name = line.trimmed();
+#ifdef Q_OS_WIN
+            if (name.startsWith("\"")) name = name.section("\",\"", 0, 0).remove(0, 1);
+#endif
+            if (name.isEmpty()) continue;
+            if (!names.contains(name)) names << name;
+        }
+        names.sort(Qt::CaseInsensitive);
+        if (names.isEmpty()) {
+            MessageBoxWarning(tr("Warning"), tr("Could not list processes"));
+            return;
+        }
+        // selection dialog
+        QDialog dialog(this);
+        dialog.setWindowTitle(tr("Select running processes"));
+        auto layout = new QVBoxLayout(&dialog);
+        auto list = new QListWidget(&dialog);
+        for (const auto &name: names) {
+            auto item = new QListWidgetItem(name, list);
+            item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
+            item->setCheckState(ui->vpn_rule_process->toPlainText().contains(name) ? Qt::Checked : Qt::Unchecked);
+        }
+        layout->addWidget(list);
+        auto bb = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, &dialog);
+        connect(bb, &QDialogButtonBox::accepted, &dialog, &QDialog::accept);
+        connect(bb, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
+        layout->addWidget(bb);
+        if (dialog.exec() != QDialog::Accepted) return;
+        // merge checked into the text edit
+        QStringList current;
+        for (const auto &l: ui->vpn_rule_process->toPlainText().split("\n")) {
+            auto t = l.trimmed();
+            if (!t.isEmpty()) current << t;
+        }
+        for (int i = 0; i < list->count(); i++) {
+            auto item = list->item(i);
+            if (item->checkState() != Qt::Checked) continue;
+            if (!current.contains(item->text())) current << item->text();
+        }
+        current.sort(Qt::CaseInsensitive);
+        ui->vpn_rule_process->setPlainText(current.join("\n"));
+    });
     //
     connect(ui->whitelist_mode, &QCheckBox::stateChanged, this, [=](int state) {
         if (state == Qt::Checked) {

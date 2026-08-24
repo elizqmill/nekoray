@@ -7,4 +7,6 @@
 #include "TrojanVLESSBean.hpp"
 #include "NaiveBean.hpp"
 #include "QUICBean.hpp"
+#include "AnyTLSBean.hpp"
+#include "SshBean.hpp"
 #include "CustomBean.hpp"

@@ -1,6 +1,9 @@
 #include "db/ProxyEntity.hpp"
 #include "fmt/includes.h"
 
+#include <QUrl>
+#include <QUrlQuery>
+
 namespace NekoGui_fmt {
     void V2rayStreamSettings::BuildStreamSettingsSingBox(QJsonObject *outbound) {
         // https://sing-box.sagernet.org/configuration/shared/v2ray-transport
@@ -220,6 +223,91 @@ namespace NekoGui_fmt {
             outbound["zero_rtt_handshake"] = zeroRttHandshake;
             if (!heartbeat.trimmed().isEmpty()) outbound["heartbeat"] = heartbeat;
         }
+
+        result.outbound = outbound;
+        return result;
+    }
+
+    CoreObjOutboundBuildResult AnyTLSBean::BuildCoreObjSingBox() {
+        CoreObjOutboundBuildResult result;
+
+        QJsonObject coreTlsObj{
+            {"enabled", true},
+            {"disable_sni", disableSni},
+            {"insecure", allowInsecure},
+            {"certificate", caText.trimmed()},
+            {"server_name", sni},
+        };
+        if (!alpn.trimmed().isEmpty()) coreTlsObj["alpn"] = QList2QJsonArray(alpn.split(","));
+
+        QJsonObject outbound{
+            {"type", "anytls"},
+            {"server", serverAddress},
+            {"server_port", serverPort},
+            {"password", password},
+            {"tls", coreTlsObj},
+        };
+
+        result.outbound = outbound;
+        return result;
+    }
+
+    bool AnyTLSBean::TryParseLink(const QString &link) {
+        // anytls://password@host:port/?sni=xxx&insecure=1&alpn=h2#name
+        auto url = QUrl(link);
+        if (!url.isValid()) return false;
+        if (url.scheme() != "anytls") return false;
+
+        password = url.userName();
+        if (url.port() > 0) serverPort = url.port();
+        serverAddress = url.host();
+
+        QUrlQuery q(url.query());
+        sni = q.queryItemValue("sni");
+        alpn = q.queryItemValue("alpn");
+        allowInsecure = q.queryItemValue("insecure") == "1";
+
+        return !serverAddress.isEmpty();
+    }
+
+    QString AnyTLSBean::ToShareLink() {
+        QUrl url;
+        url.setScheme("anytls");
+        url.setUserName(password);
+        url.setHost(serverAddress, QUrl::StrictMode);
+        if (serverPort > 0 && serverPort != 443) url.setPort(serverPort);
+        QUrlQuery q;
+        if (!sni.isEmpty()) q.addQueryItem("sni", sni);
+        if (!alpn.isEmpty()) q.addQueryItem("alpn", alpn);
+        if (allowInsecure) q.addQueryItem("insecure", "1");
+        url.setQuery(q);
+        if (!name.isEmpty()) url.setFragment(name);
+        return url.toString(QUrl::FullyEncoded);
+    }
+
+    CoreObjOutboundBuildResult SshBean::BuildCoreObjSingBox() {
+        CoreObjOutboundBuildResult result;
+
+        QJsonObject outbound{
+            {"type", "ssh"},
+            {"server", serverAddress},
+            {"server_port", serverPort <= 0 ? 22 : serverPort},
+        };
+        if (!user.trimmed().isEmpty()) outbound["user"] = user;
+        if (!password.isEmpty()) outbound["password"] = password;
+        if (!privateKey.trimmed().isEmpty()) {
+            // sing-box requires a trailing newline for OpenSSH private keys
+            auto key = privateKey.replace("\r\n", "\n");
+            if (!key.endsWith("\n")) key += "\n";
+            outbound["private_key"] = key;
+        }
+        if (!privateKeyPassphrase.isEmpty()) outbound["private_key_passphrase"] = privateKeyPassphrase;
+        QStringList hostKeys;
+        for (const auto &k: hostKey.split("\n")) {
+            auto t = k.trimmed();
+            if (!t.isEmpty()) hostKeys += t;
+        }
+        if (!hostKeys.isEmpty()) outbound["host_key"] = QList2QJsonArray(hostKeys);
 
         result.outbound = outbound;
         return result;

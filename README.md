@@ -9,6 +9,9 @@ The original repository is archived, this fork continues the work.
 ## Возможности форка / Fork features
 
 - 🌙 **Тёмная тема** — полноценная тёмная тема на базе Fusion-стиля (Настройки → Тема → Dark)
+- 🛡 **Anti-DPI (TLS Fragment)** — фрагментация TLS ClientHello для обхода DPI (Настройки маршрутизации)
+- 🔌 **Протоколы AnyTLS и SSH** — нативные outbound'ы sing-box 1.12 с редакторами
+- 🪟 **Split tunneling UI** — выбор запущенных процессов чекбоксами в настройках VPN
 - 📡 **Заголовки запроса подписки в JSON** — задаются индивидуально для каждой подписки и отправляются при каждом обновлении:
 
   ```json

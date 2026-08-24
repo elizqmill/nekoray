@@ -127,6 +127,12 @@ namespace NekoGui {
         bool skip_cert = false;
         QString utlsFingerprint = "";
 
+        // Anti-DPI
+        bool anti_dpi_tls_fragment = false;
+        QString anti_dpi_ports = "443";
+        QString anti_dpi_fallback_delay = "";
+        bool anti_dpi_record_fragment = false;
+
         // Remember
         QStringList remember_spmode = {};
         int remember_id = -1919;

@@ -63,6 +63,12 @@ DialogManageRoutes::DialogManageRoutes(QWidget *parent) : QDialog(parent), ui(ne
     builtInSchemesMenu->addActions(this->getBuiltInSchemes());
     ui->preset->setMenu(builtInSchemesMenu);
 
+    // Anti-DPI
+    ui->anti_dpi_enable->setChecked(NekoGui::dataStore->anti_dpi_tls_fragment);
+    ui->anti_dpi_ports->setText(NekoGui::dataStore->anti_dpi_ports);
+    ui->anti_dpi_fallback_delay->setText(NekoGui::dataStore->anti_dpi_fallback_delay);
+    ui->anti_dpi_record->setChecked(NekoGui::dataStore->anti_dpi_record_fragment);
+
     QString geoipFn = NekoGui::FindCoreAsset("geoip.dat");
     QString geositeFn = NekoGui::FindCoreAsset("geosite.dat");
     //
@@ -96,6 +102,16 @@ DialogManageRoutes::~DialogManageRoutes() {
 void DialogManageRoutes::accept() {
     D_C_SAVE_STRING(custom_route_global)
     bool routeChanged = false;
+    if (NekoGui::dataStore->anti_dpi_tls_fragment != ui->anti_dpi_enable->isChecked() ||
+        NekoGui::dataStore->anti_dpi_ports != ui->anti_dpi_ports->text() ||
+        NekoGui::dataStore->anti_dpi_fallback_delay != ui->anti_dpi_fallback_delay->text() ||
+        NekoGui::dataStore->anti_dpi_record_fragment != ui->anti_dpi_record->isChecked()) {
+        routeChanged = true;
+    }
+    NekoGui::dataStore->anti_dpi_tls_fragment = ui->anti_dpi_enable->isChecked();
+    NekoGui::dataStore->anti_dpi_ports = ui->anti_dpi_ports->text();
+    NekoGui::dataStore->anti_dpi_fallback_delay = ui->anti_dpi_fallback_delay->text();
+    NekoGui::dataStore->anti_dpi_record_fragment = ui->anti_dpi_record->isChecked();
     if (NekoGui::dataStore->active_routing != active_routing) routeChanged = true;
     SaveDisplayRouting(NekoGui::dataStore->routing.get());
     NekoGui::dataStore->active_routing = active_routing;

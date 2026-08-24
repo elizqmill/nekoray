@@ -163,6 +163,13 @@ This needs to be run NekoBox with administrator privileges.</string>
         <item>
          <widget class="QPlainTextEdit" name="vpn_rule_process"/>
         </item>
+        <item>
+         <widget class="QPushButton" name="select_processes">
+          <property name="text">
+           <string>Select running processes</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </widget>
      </item>

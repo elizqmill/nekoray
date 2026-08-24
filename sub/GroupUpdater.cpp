@@ -114,6 +114,14 @@ namespace NekoGui_sub {
             if (!ok) return;
         }
 
+        // AnyTLS
+        if (str.startsWith("anytls://")) {
+            needFix = false;
+            ent = NekoGui::ProfileManager::NewProxyEntity("anytls");
+            auto ok = ent->AnyTLSBean()->TryParseLink(str);
+            if (!ok) return;
+        }
+
         // Naive
         if (str.startsWith("naive+")) {
             needFix = false;

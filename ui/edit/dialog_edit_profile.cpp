@@ -8,6 +8,8 @@
 #include "ui/edit/edit_trojan_vless.h"
 #include "ui/edit/edit_naive.h"
 #include "ui/edit/edit_quic.h"
+#include "ui/edit/edit_anytls.h"
+#include "ui/edit/edit_ssh.h"
 #include "ui/edit/edit_custom.h"
 
 #include "fmt/includes.h"
@@ -116,6 +118,8 @@ DialogEditProfile::DialogEditProfile(const QString &_type, int profileOrGroupId,
         LOAD_TYPE("naive")
         LOAD_TYPE("hysteria2")
         LOAD_TYPE("tuic")
+        LOAD_TYPE("anytls")
+        LOAD_TYPE("ssh")
         ui->type->addItem(tr("Custom (%1 outbound)").arg(software_core_name), "internal");
         ui->type->addItem(tr("Custom (%1 config)").arg(software_core_name), "internal-full");
         ui->type->addItem(tr("Custom (Extra Core)"), "custom");
@@ -173,6 +177,14 @@ void DialogEditProfile::typeSelected(const QString &newType) {
         innerEditor = _innerWidget;
     } else if (type == "hysteria2" || type == "tuic") {
         auto _innerWidget = new EditQUIC(this);
+        innerWidget = _innerWidget;
+        innerEditor = _innerWidget;
+    } else if (type == "anytls") {
+        auto _innerWidget = new EditAnyTLS(this);
+        innerWidget = _innerWidget;
+        innerEditor = _innerWidget;
+    } else if (type == "ssh") {
+        auto _innerWidget = new EditSSH(this);
         innerWidget = _innerWidget;
         innerEditor = _innerWidget;
     } else if (type == "custom" || type == "internal" || type == "internal-full") {

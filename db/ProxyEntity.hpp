@@ -69,6 +69,14 @@ namespace NekoGui {
             return (NekoGui_fmt::QUICBean *) bean.get();
         };
 
+        [[nodiscard]] NekoGui_fmt::AnyTLSBean *AnyTLSBean() const {
+            return (NekoGui_fmt::AnyTLSBean *) bean.get();
+        };
+
+        [[nodiscard]] NekoGui_fmt::SshBean *SshBean() const {
+            return (NekoGui_fmt::SshBean *) bean.get();
+        };
+
         [[nodiscard]] NekoGui_fmt::CustomBean *CustomBean() const {
             return (NekoGui_fmt::CustomBean *) bean.get();
         };
