@@ -286,6 +286,8 @@ namespace NekoGui {
             // Outbound
 
             QJsonObject outbound;
+            QJsonObject endpointObj;
+            bool asEndpoint = false;
             auto stream = GetStreamSettings(ent->bean.get());
 
             if (thisExternalStat > 0) {
@@ -305,6 +307,14 @@ namespace NekoGui {
                 outbound["type"] = "socks";
                 outbound["server"] = "127.0.0.1";
                 outbound["server_port"] = ext_socks_port;
+            } else if (dynamic_cast<NekoGui_fmt::WgBean *>(ent->bean.get()) != nullptr) {
+                // sing-box 1.11+ WireGuard endpoint
+                endpointObj = dynamic_cast<NekoGui_fmt::WgBean *>(ent->bean.get())->BuildEndpoint(tagOut);
+                asEndpoint = true;
+            } else if (dynamic_cast<NekoGui_fmt::TailscaleBean *>(ent->bean.get()) != nullptr) {
+                // sing-box 1.12 Tailscale endpoint
+                endpointObj = dynamic_cast<NekoGui_fmt::TailscaleBean *>(ent->bean.get())->BuildEndpoint(tagOut);
+                asEndpoint = true;
             } else {
                 const auto coreR = ent->bean->BuildCoreObjSingBox();
                 if (coreR.outbound.isEmpty()) {
@@ -346,7 +356,7 @@ namespace NekoGui {
 
             // common
             // apply domain_strategy
-            outbound["domain_strategy"] = dataStore->routing->outbound_domain_strategy;
+            if (!asEndpoint) outbound["domain_strategy"] = dataStore->routing->outbound_domain_strategy;
             // apply mux
             if (!muxApplied && needMux) {
                 auto muxObj = QJsonObject{
@@ -375,7 +385,11 @@ namespace NekoGui {
                 status->domainListDNSDirect += "full:" + serverAddress;
             }
 
-            status->outbounds += outbound;
+            if (!asEndpoint) {
+                status->outbounds += outbound;
+            } else {
+                status->endpoints += endpointObj;
+            }
             pastTag = tagOut;
             pastExternalStat = thisExternalStat;
             index++;
@@ -457,6 +471,7 @@ namespace NekoGui {
 
         status->result->coreConfig.insert("inbounds", status->inbounds);
         status->result->coreConfig.insert("outbounds", status->outbounds);
+        if (!status->endpoints.isEmpty()) status->result->coreConfig.insert("endpoints", status->endpoints);
 
         // user rule
         if (!status->forTest) {

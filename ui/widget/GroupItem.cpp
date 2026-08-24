@@ -78,6 +78,9 @@ void GroupItem::refresh_data() {
         if (ent->sub_last_update != 0) {
             info << tr("Last update: %1").arg(DisplayTime(ent->sub_last_update, QLocale::ShortFormat));
         }
+        if (!ent->sub_last_error.trimmed().isEmpty()) {
+            info << "⚠ " + ent->sub_last_error;
+        }
         auto subinfo = ParseSubInfo(ent->info);
         if (!ent->info.isEmpty()) {
             info << subinfo;

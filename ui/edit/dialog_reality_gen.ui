@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DialogRealityGen</class>
+ <widget class="QDialog" name="DialogRealityGen">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>460</width>
+    <height>460</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>VLESS Reality Link Generator</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <widget class="QLabel" name="uuid_l">
+     <property name="text">
+      <string>UUID</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QLineEdit" name="uuid"/>
+   </item>
+   <item row="0" column="2">
+    <widget class="QPushButton" name="uuidgen">
+     <property name="text">
+      <string>Generate</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="address_l">
+     <property name="text">
+      <string>Address</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QLineEdit" name="address"/>
+   </item>
+   <item row="1" column="2">
+    <widget class="QLabel" name="port_l">
+     <property name="text">
+      <string>Port</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="3">
+    <widget class="QLineEdit" name="port">
+     <property name="text">
+      <string notr="true">443</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="sni_l">
+     <property name="text">
+      <string>SNI / Dest</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QLineEdit" name="sni">
+     <property name="placeholderText">
+      <string notr="true">www.microsoft.com</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="2">
+    <widget class="QLabel" name="flow_l">
+     <property name="text">
+      <string>Flow</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="3">
+    <widget class="QComboBox" name="flow">
+     <item>
+      <property name="text">
+       <string notr="true"/>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string notr="true">xtls-rprx-vision</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="public_key_l">
+     <property name="text">
+      <string>Public Key (pbk)</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="QLineEdit" name="public_key"/>
+   </item>
+   <item row="4" column="0">
+    <widget class="QLabel" name="short_id_l">
+     <property name="text">
+      <string>Short ID (sid)</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="1">
+    <widget class="QLineEdit" name="short_id"/>
+   </item>
+   <item row="4" column="2">
+    <widget class="QPushButton" name="sidgen">
+     <property name="text">
+      <string>Generate</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0">
+    <widget class="QLabel" name="fingerprint_l">
+     <property name="text">
+      <string>Fingerprint (fp)</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="1">
+    <widget class="QComboBox" name="fingerprint">
+     <item>
+      <property name="text">
+       <string notr="true">chrome</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string notr="true">firefox</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string notr="true">safari</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string notr="true">ios</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string notr="true">android</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string notr="true">edge</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string notr="true">random</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="6" column="0">
+    <widget class="QLabel" name="name_l">
+     <property name="text">
+      <string>Name</string>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="1">
+    <widget class="QLineEdit" name="name"/>
+   </item>
+   <item row="7" column="0" colspan="3">
+    <widget class="QPushButton" name="copy">
+     <property name="text">
+      <string>Generate &amp; Copy link</string>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="0" colspan="3">
+    <widget class="QPlainTextEdit" name="result">
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>100</height>
+      </size>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

@@ -21,6 +21,10 @@ namespace NekoGui_fmt {
 
     class SshBean;
 
+    class WgBean;
+
+    class TailscaleBean;
+
     class CustomBean;
 
     class ChainBean;
@@ -79,6 +83,14 @@ namespace NekoGui {
 
         [[nodiscard]] NekoGui_fmt::SshBean *SshBean() const {
             return (NekoGui_fmt::SshBean *) bean.get();
+        };
+
+        [[nodiscard]] NekoGui_fmt::WgBean *WgBean() const {
+            return (NekoGui_fmt::WgBean *) bean.get();
+        };
+
+        [[nodiscard]] NekoGui_fmt::TailscaleBean *TailscaleBean() const {
+            return (NekoGui_fmt::TailscaleBean *) bean.get();
         };
 
         [[nodiscard]] NekoGui_fmt::CustomBean *CustomBean() const {

@@ -4,6 +4,7 @@
 #include "3rdparty/qv2ray/v2/ui/widgets/editors/w_JsonEditor.hpp"
 #include "3rdparty/qv2ray/v3/components/GeositeReader/GeositeReader.hpp"
 #include "main/GuiUtils.hpp"
+#include "main/HTTPRequestHelper.hpp"
 #include "fmt/Preset.hpp"
 
 #include <QFile>
@@ -68,6 +69,45 @@ DialogManageRoutes::DialogManageRoutes(QWidget *parent) : QDialog(parent), ui(ne
     ui->anti_dpi_ports->setText(NekoGui::dataStore->anti_dpi_ports);
     ui->anti_dpi_fallback_delay->setText(NekoGui::dataStore->anti_dpi_fallback_delay);
     ui->anti_dpi_record->setChecked(NekoGui::dataStore->anti_dpi_record_fragment);
+    connect(ui->anti_dpi_preset_max, &QPushButton::clicked, this, [=] {
+        // Maximum DPI bypass: ClientHello fragmentation + deep sniffing
+        ui->anti_dpi_enable->setChecked(true);
+        ui->anti_dpi_ports->setText("443");
+        ui->anti_dpi_fallback_delay->setText("");
+        ui->anti_dpi_record->setChecked(false);
+        if (ui->sniffing_mode->count() > 2) ui->sniffing_mode->setCurrentIndex(2); // for destination
+    });
+
+    // Geo databases update
+    auto updateGeoDb = [=](const QString &url, const QString &fileName) {
+        runOnNewThread([=] {
+            MW_show_log(">>>>>>>> " + QObject::tr("Downloading %1 ...").arg(fileName));
+            auto resp = NetworkRequestHelper::HttpGet(QUrl(url), "", "NekoRay-geo-updater");
+            if (!resp.error.isEmpty()) {
+                MW_show_log("<<<<<<<< " + QObject::tr("Failed to download %1: %2").arg(fileName, resp.error));
+                return;
+            }
+            if (resp.data.isEmpty()) {
+                MW_show_log("<<<<<<<< " + QObject::tr("Failed to download %1: empty response").arg(fileName));
+                return;
+            }
+            QString target = QApplication::applicationDirPath() + "/" + fileName;
+            QFile f(target);
+            if (!f.open(QIODevice::WriteOnly)) {
+                MW_show_log("<<<<<<<< " + QObject::tr("Cannot write to %1").arg(target));
+                return;
+            }
+            f.write(resp.data);
+            f.close();
+            MW_show_log("<<<<<<<< " + QObject::tr("%1 updated (%2 KB)").arg(fileName).arg(resp.data.size() / 1024));
+        });
+    };
+    connect(ui->update_geoip_db, &QPushButton::clicked, this, [=] {
+        updateGeoDb("https://github.com/v2fly/geoip/releases/latest/download/geoip.dat", "geoip.db");
+    });
+    connect(ui->update_geosite_db, &QPushButton::clicked, this, [=] {
+        updateGeoDb("https://github.com/v2fly/domain-list-community/releases/latest/download/dlc.dat", "geosite.db");
+    });
 
     QString geoipFn = NekoGui::FindCoreAsset("geoip.dat");
     QString geositeFn = NekoGui::FindCoreAsset("geosite.dat");

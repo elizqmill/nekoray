@@ -190,6 +190,10 @@ namespace NekoGui {
             bean = new NekoGui_fmt::AnyTLSBean();
         } else if (type == "ssh") {
             bean = new NekoGui_fmt::SshBean();
+        } else if (type == "wireguard") {
+            bean = new NekoGui_fmt::WgBean();
+        } else if (type == "tailscale") {
+            bean = new NekoGui_fmt::TailscaleBean();
         } else if (type == "tuic") {
             bean = new NekoGui_fmt::QUICBean(NekoGui_fmt::QUICBean::proxy_TUIC);
         } else if (type == "custom") {
@@ -317,6 +321,7 @@ namespace NekoGui {
         _add(new configItem("url", &url, itemType::string));
         _add(new configItem("req_headers", &request_headers, itemType::string));
         _add(new configItem("user_agent", &user_agent, itemType::string));
+        _add(new configItem("sub_last_error", &sub_last_error, itemType::string));
         _add(new configItem("info", &info, itemType::string));
         _add(new configItem("lastup", &sub_last_update, itemType::integer64));
         _add(new configItem("manually_column_width", &manually_column_width, itemType::boolean));

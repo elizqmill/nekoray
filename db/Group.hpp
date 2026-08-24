@@ -13,6 +13,7 @@ namespace NekoGui {
         QString url = "";
         QString request_headers = "";
         QString user_agent = "";
+        QString sub_last_error = "";
         QString info = "";
         qint64 sub_last_update = 0;
         int front_proxy_id = -1;

@@ -9,4 +9,5 @@
 #include "QUICBean.hpp"
 #include "AnyTLSBean.hpp"
 #include "SshBean.hpp"
+#include "WgTailscaleBean.hpp"
 #include "CustomBean.hpp"

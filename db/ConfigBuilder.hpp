@@ -42,6 +42,7 @@ namespace NekoGui {
         QJsonArray routingRules;
         QJsonArray inbounds;
         QJsonArray outbounds;
+        QJsonArray endpoints;
     };
 
     std::shared_ptr<BuildConfigResult> BuildConfig(const std::shared_ptr<ProxyEntity> &ent, bool forTest, bool forExport);

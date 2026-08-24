@@ -171,6 +171,10 @@ set(PROJECT_SOURCES
         ui/edit/dialog_edit_profile.h
         ui/edit/dialog_edit_profile.cpp
         ui/edit/dialog_edit_profile.ui
+
+        ui/edit/dialog_reality_gen.h
+        ui/edit/dialog_reality_gen.cpp
+        ui/edit/dialog_reality_gen.ui
         ui/edit/dialog_edit_group.h
         ui/edit/dialog_edit_group.cpp
         ui/edit/dialog_edit_group.ui
@@ -206,6 +210,14 @@ set(PROJECT_SOURCES
         ui/edit/edit_ssh.h
         ui/edit/edit_ssh.cpp
         ui/edit/edit_ssh.ui
+
+        ui/edit/edit_wg.h
+        ui/edit/edit_wg.cpp
+        ui/edit/edit_wg.ui
+
+        ui/edit/edit_tailscale.h
+        ui/edit/edit_tailscale.cpp
+        ui/edit/edit_tailscale.ui
 
         ui/edit/edit_custom.h
         ui/edit/edit_custom.cpp

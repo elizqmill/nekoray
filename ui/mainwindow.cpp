@@ -11,6 +11,7 @@
 #include "ui/ThemeManager.hpp"
 #include "ui/Icon.hpp"
 #include "ui/edit/dialog_edit_profile.h"
+#include "ui/edit/dialog_reality_gen.h"
 #include "ui/dialog_basic_settings.h"
 #include "ui/dialog_manage_groups.h"
 #include "ui/dialog_manage_routes.h"
@@ -46,6 +47,7 @@
 #include <QTimer>
 #include <QMessageBox>
 #include <QDir>
+#include <QFileDialog>
 #include <QFileInfo>
 
 void UI_InitMainWindow() {
@@ -98,7 +100,72 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     // top bar
     ui->toolButton_program->setMenu(ui->menu_program);
     ui->toolButton_preferences->setMenu(ui->menu_preferences);
+    {
+        // Settings backup / restore
+        ui->menu_preferences->addSeparator();
+
+        static const auto copyDirRecursive = [](const QString &src, const QString &dst, bool *ok) -> void {
+            QDir(src).mkpath(dst);
+            for (const auto &entry: QDir(src).entryInfoList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot)) {
+                if (entry.isDir()) {
+                    copyDirRecursive(entry.absoluteFilePath(), dst + "/" + entry.fileName(), ok);
+                } else {
+                    if (!QFile::copy(entry.absoluteFilePath(), dst + "/" + entry.fileName())) *ok = false;
+                }
+            }
+        };
+
+        auto actBackup = ui->menu_preferences->addAction(tr("Backup settings"));
+        connect(actBackup, &QAction::triggered, this, [=] {
+            auto stamp = QDateTime::currentDateTime().toString("yyyyMMdd-HHmmss");
+            auto dst = QApplication::applicationDirPath() + "/config-backup-" + stamp;
+            bool ok = true;
+            QDir().mkpath(dst);
+            for (const auto &sub: {"groups", "profiles", "routes"}) {
+                if (QDir(sub).exists()) copyDirRecursive(sub, dst + "/" + sub, &ok);
+            }
+            for (const auto &f: QDir(".").entryInfoList(QStringList{"*.json"}, QDir::Files)) {
+                QFile::copy(f.absoluteFilePath(), dst + "/" + f.fileName());
+            }
+            MessageBoxInfo(software_name, tr("Settings backed up to:\n%1").arg(ok ? dst : dst + " (with errors)"));
+        });
+
+        auto actRestore = ui->menu_preferences->addAction(tr("Restore settings"));
+        connect(actRestore, &QAction::triggered, this, [=] {
+            auto dir = QFileDialog::getExistingDirectory(this, tr("Select backup folder"),
+                                                         QApplication::applicationDirPath());
+            if (dir.isEmpty()) return;
+            bool ok = true;
+            static const auto clearDir = [](const QString &d) {
+                QDir(d).removeRecursively();
+            };
+            for (const auto &sub: {"groups", "profiles", "routes"}) {
+                if (QDir(dir + "/" + sub).exists()) {
+                    clearDir(sub);
+                    copyDirRecursive(dir + "/" + sub, sub, &ok);
+                }
+            }
+            for (const auto &f: QDir(dir).entryInfoList(QStringList{"*.json"}, QDir::Files)) {
+                QFile::remove(f.fileName());
+                ok &= QFile::copy(f.absoluteFilePath(), f.fileName());
+            }
+            if (!ok) {
+                MessageBoxWarning(tr("Warning"), tr("Some files failed to restore"));
+                return;
+            }
+            MessageBoxInfo(software_name, tr("Restored. Please restart the program."));
+        });
+    }
     ui->toolButton_server->setMenu(ui->menu_server);
+    {
+        ui->menu_server->addSeparator();
+        auto actRealityGen = ui->menu_server->addAction(tr("Reality link generator"));
+        connect(actRealityGen, &QAction::triggered, this, [=] {
+            auto dialog = new DialogRealityGen(this);
+            connect(dialog, &QDialog::finished, dialog, &QDialog::deleteLater);
+            dialog->show();
+        });
+    }
     ui->menubar->setVisible(false);
     connect(ui->toolButton_document, &QToolButton::clicked, this, [=] { QDesktopServices::openUrl(QUrl("https://github.com/elizqmill/nekoray#readme")); });
     connect(ui->toolButton_ads, &QToolButton::clicked, this, [=] { QDesktopServices::openUrl(QUrl("https://github.com/elizqmill/nekoray/releases")); });

@@ -529,11 +529,19 @@ namespace NekoGui_sub {
                                                       group == nullptr ? "" : group->user_agent);
             if (!resp.error.isEmpty()) {
                 MW_show_log("<<<<<<<< " + QObject::tr("Requesting subscription %1 error: %2").arg(groupName, resp.error + "\n" + resp.data));
+                if (group != nullptr) {
+                    group->sub_last_error = resp.error.left(200);
+                    group->Save();
+                }
                 return;
             }
 
             content = resp.data;
             sub_user_info = NetworkRequestHelper::GetHeader(resp.header, "Subscription-UserInfo");
+            if (group != nullptr && !group->sub_last_error.isEmpty()) {
+                group->sub_last_error = "";
+                group->Save();
+            }
 
             MW_show_log("<<<<<<<< " + QObject::tr("Subscription request fininshed: %1").arg(groupName));
         }
