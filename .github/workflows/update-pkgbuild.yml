@@ -1,12 +1,8 @@
 name: AUR CI
 on:
-  push:
-    branches:
-      - main
-    paths-ignore:
-      - '**.md'
-      - 'LICENSE'
-      - '!.github/workflows/**'
+  # Only run manually: requires DEPLOY_KEY secret (AUR SSH deploy key)
+  # configured in repository Settings -> Secrets and variables -> Actions.
+  workflow_dispatch:
 
 jobs:
   update:
