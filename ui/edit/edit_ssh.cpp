@@ -17,9 +17,9 @@ void EditSSH::onStart(std::shared_ptr<NekoGui::ProxyEntity> _ent) {
 
     P_LOAD_STRING(user);
     P_LOAD_STRING(password);
-    P_LOAD_STRING(privateKeyPassphrase);
-    ui->private_key->setPlainText(bean->privateKey.replace("\\n", "\n"));
-    ui->host_key->setPlainText(bean->hostKey.replace("\\n", "\n"));
+    P_LOAD_STRING_PLAIN(privateKey);
+    P_LOAD_STRING_PLAIN(hostKey);
+    ui->private_key_passphrase->setText(bean->privateKeyPassphrase);
 }
 
 bool EditSSH::onEnd() {
@@ -27,8 +27,8 @@ bool EditSSH::onEnd() {
 
     P_SAVE_STRING(user);
     P_SAVE_STRING(password);
-    P_SAVE_STRING(privateKeyPassphrase);
-    bean->privateKey = ui->private_key->toPlainText();
-    bean->hostKey = ui->host_key->toPlainText();
+    P_SAVE_STRING_PLAIN(privateKey);
+    P_SAVE_STRING_PLAIN(hostKey);
+    bean->privateKeyPassphrase = ui->private_key_passphrase->text();
     return true;
 }
