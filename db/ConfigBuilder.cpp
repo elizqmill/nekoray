@@ -440,7 +440,9 @@ namespace NekoGui {
         auto tagProxy = BuildChain(0, status);
         if (!status->result->error.isEmpty()) return;
 
-        // direct & bypass & block
+        // direct & bypass
+        // (since sing-box 1.11 there are no "block" and "dns" outbounds,
+        //  blocking / dns hijacking is done via route rule actions)
         status->outbounds += QJsonObject{
             {"type", "direct"},
             {"tag", "direct"},
@@ -449,16 +451,6 @@ namespace NekoGui {
             {"type", "direct"},
             {"tag", "bypass"},
         };
-        status->outbounds += QJsonObject{
-            {"type", "block"},
-            {"tag", "block"},
-        };
-        if (!status->forTest) {
-            status->outbounds += QJsonObject{
-                {"type", "dns"},
-                {"tag", "dns-out"},
-            };
-        }
 
         // custom inbound
         if (!status->forTest) QJSONARRAY_ADD(status->inbounds, QString2QJsonObject(dataStore->custom_inbound)["inbounds"].toArray())
@@ -630,7 +622,7 @@ namespace NekoGui {
         if (!status->forTest) {
             status->routingRules += QJsonObject{
                 {"protocol", "dns"},
-                {"outbound", "dns-out"},
+                {"action", "hijack-dns"},
             };
         }
 
@@ -641,12 +633,18 @@ namespace NekoGui {
             rule["outbound"] = out;
             status->routingRules += rule;
         };
+        auto add_rule_reject = [&](const QStringList &list, bool isIP) {
+            auto rule = make_rule(list, isIP);
+            if (rule.isEmpty()) return;
+            rule["action"] = "reject";
+            status->routingRules += rule;
+        };
 
         // final add user rule
-        add_rule_route(status->domainListBlock, false, "block");
+        add_rule_reject(status->domainListBlock, false);
         add_rule_route(status->domainListRemote, false, tagProxy);
         add_rule_route(status->domainListDirect, false, "bypass");
-        add_rule_route(status->ipListBlock, true, "block");
+        add_rule_reject(status->ipListBlock, true);
         add_rule_route(status->ipListRemote, true, tagProxy);
         add_rule_route(status->ipListDirect, true, "bypass");
 
@@ -654,15 +652,15 @@ namespace NekoGui {
         status->routingRules += QJsonObject{
             {"network", "udp"},
             {"port", QJsonArray{135, 137, 138, 139, 5353}},
-            {"outbound", "block"},
+            {"action", "reject"},
         };
         status->routingRules += QJsonObject{
             {"ip_cidr", QJsonArray{"224.0.0.0/3", "ff00::/8"}},
-            {"outbound", "block"},
+            {"action", "reject"},
         };
         status->routingRules += QJsonObject{
             {"source_ip_cidr", QJsonArray{"224.0.0.0/3", "ff00::/8"}},
-            {"outbound", "block"},
+            {"action", "reject"},
         };
 
         // tun user rule
