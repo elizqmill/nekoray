@@ -17,6 +17,10 @@ namespace NekoGui_fmt {
 
     class QUICBean;
 
+    class AnyTLSBean;
+
+    class SshBean;
+
     class CustomBean;
 
     class ChainBean;
