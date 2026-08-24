@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QWidget>
-#include "ui/edit/profile_editor.h"
+#include "profile_editor.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -23,4 +23,5 @@ public:
 
 private:
     Ui::EditSSH *ui;
+    std::shared_ptr<NekoGui::ProxyEntity> ent;
 };
