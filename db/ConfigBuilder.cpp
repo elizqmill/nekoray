@@ -465,28 +465,46 @@ namespace NekoGui {
         }
 
         // sing-box common rule object
+        QJsonArray ruleSets;
+        QStringList ruleSetTags;
+        auto add_geo_ruleset = [&](const QString &item) -> QString {
+            // sing-box 1.12 removed geoip:/geosite: rule items;
+            // this fork resolves them through local rule-sets with a
+            // "geoip:"/"geosite:" path prefix
+            auto tag = item;
+            tag.replace(":", "-");
+            if (!ruleSetTags.contains(tag)) {
+                ruleSetTags << tag;
+                ruleSets += QJsonObject{
+                    {"type", "local"},
+                    {"tag", tag},
+                    {"format", "source"},
+                    {"path", item},
+                };
+            }
+            return tag;
+        };
         auto make_rule = [&](const QStringList &list, bool isIP = false) {
             QJsonObject rule;
             //
             QJsonArray ip_cidr;
-            QJsonArray geoip;
+            QStringList rule_set_refs;
             //
             QJsonArray domain_keyword;
             QJsonArray domain_subdomain;
             QJsonArray domain_regexp;
             QJsonArray domain_full;
-            QJsonArray geosite;
             for (auto item: list) {
                 if (isIP) {
                     if (item.startsWith("geoip:")) {
-                        geoip += item.replace("geoip:", "");
+                        rule_set_refs += add_geo_ruleset(item);
                     } else {
                         ip_cidr += item;
                     }
                 } else {
                     // https://www.v2fly.org/config/dns.html#dnsobject
                     if (item.startsWith("geosite:")) {
-                        geosite += item.replace("geosite:", "");
+                        rule_set_refs += add_geo_ruleset(item);
                     } else if (item.startsWith("full:")) {
                         domain_full += item.replace("full:", "").toLower();
                     } else if (item.startsWith("domain:")) {
@@ -501,18 +519,19 @@ namespace NekoGui {
                 }
             }
             if (isIP) {
-                if (ip_cidr.isEmpty() && geoip.isEmpty()) return rule;
+                if (ip_cidr.isEmpty() && rule_set_refs.isEmpty()) return rule;
                 rule["ip_cidr"] = ip_cidr;
-                rule["geoip"] = geoip;
             } else {
-                if (domain_keyword.isEmpty() && domain_subdomain.isEmpty() && domain_regexp.isEmpty() && domain_full.isEmpty() && geosite.isEmpty()) {
+                if (domain_keyword.isEmpty() && domain_subdomain.isEmpty() && domain_regexp.isEmpty() && domain_full.isEmpty() && rule_set_refs.isEmpty()) {
                     return rule;
                 }
                 rule["domain"] = domain_full;
                 rule["domain_suffix"] = domain_subdomain; // v2ray Subdomain => sing-box suffix
                 rule["domain_keyword"] = domain_keyword;
                 rule["domain_regex"] = domain_regexp;
-                rule["geosite"] = geosite;
+            }
+            if (!rule_set_refs.isEmpty()) {
+                rule["rule_set"] = QList2QJsonArray(rule_set_refs);
             }
             return rule;
         };
@@ -718,6 +737,7 @@ namespace NekoGui {
                 },
             }};
         if (!status->forTest) routeObj["final"] = dataStore->routing->def_outbound;
+        if (!ruleSets.isEmpty()) routeObj["rule_set"] = ruleSets;
         if (status->forExport) {
             routeObj.remove("geoip");
             routeObj.remove("geosite");
