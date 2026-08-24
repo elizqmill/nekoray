@@ -20,7 +20,7 @@ void EditAnyTLS::onStart(std::shared_ptr<NekoGui::ProxyEntity> _ent) {
     P_LOAD_STRING(alpn);
     P_LOAD_BOOL(allowInsecure);
     P_LOAD_BOOL(disableSni);
-    P_LOAD_STRING_PLAIN(caText);
+    ui->ca_text->setPlainText(bean->caText);
 }
 
 bool EditAnyTLS::onEnd() {
@@ -29,8 +29,8 @@ bool EditAnyTLS::onEnd() {
     P_SAVE_STRING(password);
     P_SAVE_STRING(sni);
     P_SAVE_STRING(alpn);
-    P_SAVE_STRING_PLAIN(caText);
     P_SAVE_BOOL(allowInsecure);
     P_SAVE_BOOL(disableSni);
+    bean->caText = ui->ca_text->toPlainText();
     return true;
 }
