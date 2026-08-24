@@ -149,6 +149,8 @@ jobs:
     name: Pack & Publish Release
     if: github.event.inputs.artifact-pack != 'y'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     needs:
       - build-cpp
       - build-go
