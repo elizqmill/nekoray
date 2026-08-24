@@ -150,6 +150,7 @@ set(PROJECT_SOURCES
 
         fmt/AbstractBean.cpp
         fmt/Bean2CoreObj_box.cpp
+        fmt/Bean2WgTailscale.cpp
         fmt/Bean2External.cpp
         fmt/Bean2Link.cpp
         fmt/Link2Bean.cpp
