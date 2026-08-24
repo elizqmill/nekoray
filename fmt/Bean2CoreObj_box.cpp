@@ -259,7 +259,8 @@ namespace NekoGui_fmt {
         if (url.scheme() != "anytls") return false;
 
         password = url.userName();
-        if (url.port() > 0) serverPort = url.port();
+        serverPort = url.port();
+        if (serverPort == -1) serverPort = 443;
         serverAddress = url.host();
 
         QUrlQuery q(url.query());
